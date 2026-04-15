@@ -117,7 +117,6 @@ if (!window.__AI_TRANSLATOR_CONTENT_READY__) {
       hideBottomPanel();
       clearInlineArtifacts();
       renderInlineStatus({
-        title: title || "当前页面",
         meta: "全文翻译中",
         body: "AI 正在翻译本页内容",
         isLoading: true
@@ -143,7 +142,6 @@ if (!window.__AI_TRANSLATOR_CONTENT_READY__) {
 
       if (inserted === 0) {
         renderInlineStatus({
-          title: payload.title || "当前页面",
           meta: "翻译失败",
           body: "没有成功插入段落译文，请切换到底部悬浮模式重试。",
           isError: true
@@ -152,8 +150,7 @@ if (!window.__AI_TRANSLATOR_CONTENT_READY__) {
       }
 
       renderInlineStatus({
-        title: payload.title || "当前页面",
-        meta: payload.providerLabel || "AI Translate",
+        meta: "全文翻译完成",
         body: payload.truncated ? "译文已插入，部分内容因上限未翻译。" : "译文已插入页面。"
       });
       return;
@@ -173,7 +170,6 @@ if (!window.__AI_TRANSLATOR_CONTENT_READY__) {
       hideBottomPanel();
       clearInlineTranslations();
       renderInlineStatus({
-        title: "当前页面",
         meta: "翻译失败",
         body: message,
         isError: true
@@ -220,8 +216,7 @@ if (!window.__AI_TRANSLATOR_CONTENT_READY__) {
 
     if (payload.progress) {
       renderInlineStatus({
-        title: document.title || "当前页面",
-        meta: payload.providerLabel || "AI Translate",
+        meta: "全文翻译中",
         body: `正在翻译 ${payload.progress.done}/${payload.progress.total}`,
         isLoading: true
       });
@@ -541,7 +536,7 @@ if (!window.__AI_TRANSLATOR_CONTENT_READY__) {
     document.querySelectorAll(INLINE_STATUS_SELECTOR).forEach((node) => node.remove());
   }
 
-  function renderInlineStatus({ title, meta, body, isError = false, isLoading = false }) {
+  function renderInlineStatus({ title = "", meta, body, isError = false, isLoading = false }) {
     clearInlineStatus();
     const host = document.createElement("div");
     host.dataset.aiTranslatorInlineStatus = "true";
@@ -573,9 +568,16 @@ if (!window.__AI_TRANSLATOR_CONTENT_READY__) {
           color: #1f2328;
           font-family: "Microsoft YaHei UI", "PingFang SC", sans-serif;
         }
-        .head { display: flex; align-items: center; justify-content: space-between; gap: 12px; }
-        .title { font-size: 15px; font-weight: 600; margin: 0; }
-        .meta { margin: 4px 0 0; color: ${isError ? "#c03d2e" : "#6b7280"}; font-size: 12px; }
+        .head { display: flex; align-items: flex-start; justify-content: space-between; gap: 12px; }
+        .head-main { min-width: 0; flex: 1; }
+        .title { font-size: 15px; font-weight: 600; margin: 0 0 4px; }
+        .meta {
+          margin: 0;
+          color: ${isError ? "#c03d2e" : "#3b4a63"};
+          font-size: 13px;
+          font-weight: 600;
+          line-height: 1.4;
+        }
         .body { margin-top: 8px; white-space: pre-wrap; line-height: 1.65; font-size: 14px; }
         .loading {
           display: inline-flex;
@@ -606,6 +608,8 @@ if (!window.__AI_TRANSLATOR_CONTENT_READY__) {
           font: inherit;
           padding: 6px 10px;
           cursor: pointer;
+          flex-shrink: 0;
+          white-space: nowrap;
         }
         button:hover { background: #f8fafc; }
         @keyframes toast-enter {
@@ -631,8 +635,8 @@ if (!window.__AI_TRANSLATOR_CONTENT_READY__) {
       </style>
       <div class="card">
         <div class="head">
-          <div>
-            <p class="title">${escapeHtml(title)}</p>
+          <div class="head-main">
+            ${title ? `<p class="title">${escapeHtml(title)}</p>` : ""}
             <p class="meta">${escapeHtml(meta)}</p>
           </div>
           <button id="clear-btn" type="button">清除</button>
