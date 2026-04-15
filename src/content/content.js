@@ -61,6 +61,11 @@ if (!window.__AI_TRANSLATOR_CONTENT_READY__) {
         sendResponse({ ok: true });
         return true;
 
+      case "page:status":
+        renderPageStatus(message.payload);
+        sendResponse({ ok: true });
+        return true;
+
       case "page:error":
         renderPageError(message.payload?.message || "翻译失败。");
         sendResponse({ ok: true });
@@ -217,7 +222,9 @@ if (!window.__AI_TRANSLATOR_CONTENT_READY__) {
     if (payload.progress) {
       renderInlineStatus({
         meta: "全文翻译中",
-        body: `正在翻译 ${payload.progress.done}/${payload.progress.total}`,
+        body:
+          payload.progress.message ||
+          `正在翻译 ${payload.progress.done}/${payload.progress.total}`,
         isLoading: true
       });
     }
@@ -225,6 +232,18 @@ if (!window.__AI_TRANSLATOR_CONTENT_READY__) {
     if (firstInsertedNode && payload.progress?.done === 1) {
       scrollNodeIntoView(firstInsertedNode);
     }
+  }
+
+  function renderPageStatus(payload) {
+    if (lastPageDisplayMode !== "inline") {
+      return;
+    }
+
+    renderInlineStatus({
+      meta: payload?.meta || "全文翻译中",
+      body: payload?.message || "AI 正在翻译本页内容",
+      isLoading: true
+    });
   }
 
   function ensureRoot() {
@@ -432,12 +451,16 @@ if (!window.__AI_TRANSLATOR_CONTENT_READY__) {
   }
 
   function collectPageBlocks(root) {
-    const elements = Array.from(root.querySelectorAll("h1, h2, h3, h4, p, li, blockquote"));
+    const elements = Array.from(root.querySelectorAll("h1, h2, h3, h4, p, li, blockquote, div"));
     const blocks = [];
     let id = 1;
 
     for (const element of elements) {
       if (shouldSkipBlock(element, root)) {
+        continue;
+      }
+
+      if (!isReadableBlockCandidate(element)) {
         continue;
       }
 
@@ -460,6 +483,43 @@ if (!window.__AI_TRANSLATOR_CONTENT_READY__) {
     }
 
     return blocks;
+  }
+
+  function isReadableBlockCandidate(element) {
+    const tagName = element.tagName;
+
+    if (tagName !== "DIV") {
+      return true;
+    }
+
+    if (element.closest("a, button, label")) {
+      return false;
+    }
+
+    if (element.querySelector("h1, h2, h3, h4, p, li, blockquote")) {
+      return false;
+    }
+
+    if (element.querySelector("img, svg, picture, video, canvas, iframe, form, input, textarea, select")) {
+      return false;
+    }
+
+    const childTags = Array.from(element.children).map((child) => child.tagName);
+    if (childTags.some((tag) => /^(DIV|SECTION|ARTICLE|UL|OL|NAV|ASIDE|HEADER|FOOTER)$/.test(tag))) {
+      return false;
+    }
+
+    const computed = window.getComputedStyle(element);
+    if (!computed || computed.display === "inline" || computed.display === "contents") {
+      return false;
+    }
+
+    const text = cleanInlineText(element.innerText || element.textContent || "");
+    if (text.length < 24 || text.length > 1200) {
+      return false;
+    }
+
+    return true;
   }
 
   function shouldSkipBlock(element, root) {

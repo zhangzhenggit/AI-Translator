@@ -221,12 +221,28 @@ async function translatePageBlocks(tabId, settings, pagePayload) {
     throw new Error("当前页面没有提取到可翻译的正文段落。");
   }
 
-  const chunks = chunkBlocks(limited.blocks, 1800);
+  const chunks = chunkBlocks(limited.blocks, 1400);
   const translationMap = new Map();
   let providerInfo = null;
 
+  await sendMessageToTab(tabId, {
+    type: "page:status",
+    payload: {
+      meta: "全文翻译中",
+      message: `已提取 ${limited.blocks.length} 段，准备开始翻译`
+    }
+  }).catch(() => {});
+
   for (let index = 0; index < chunks.length; index += 1) {
     const chunk = chunks[index];
+    await sendMessageToTab(tabId, {
+      type: "page:status",
+      payload: {
+        meta: "全文翻译中",
+        message: `正在翻译第 ${index + 1}/${chunks.length} 组`
+      }
+    }).catch(() => {});
+
     const result = await requestTranslation(settings, buildPageBlockMessages(settings, pagePayload, chunk));
     providerInfo = result.provider;
     const parsed = parseBlockTranslations(result.text);
@@ -254,7 +270,8 @@ async function translatePageBlocks(tabId, settings, pagePayload) {
         blockTranslations: chunkTranslations,
         progress: {
           done: index + 1,
-          total: chunks.length
+          total: chunks.length,
+          message: `已完成 ${index + 1}/${chunks.length} 组`
         }
       }
     }).catch(() => {});
