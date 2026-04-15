@@ -1,6 +1,7 @@
 import { resolveProviderSettings } from "../shared/defaults.js";
 
-const REQUEST_TIMEOUT_MS = 45000;
+const REQUEST_TIMEOUT_MS = 60000;
+const HEARTBEAT_KEY = "ai-translator-heartbeat";
 
 export async function requestTranslation(settings, messages) {
   return withKeepAlive((async () => {
@@ -99,13 +100,21 @@ function extractMessageContent(payload) {
 }
 
 async function withKeepAlive(promise) {
+  await runHeartbeat();
+
   const keepAlive = setInterval(() => {
-    chrome.runtime.getPlatformInfo().catch(() => {});
-  }, 25_000);
+    runHeartbeat().catch(() => {});
+  }, 20_000);
 
   try {
     return await promise;
   } finally {
     clearInterval(keepAlive);
   }
+}
+
+async function runHeartbeat() {
+  await chrome.storage.local.set({
+    [HEARTBEAT_KEY]: Date.now()
+  });
 }

@@ -221,7 +221,7 @@ async function translatePageBlocks(tabId, settings, pagePayload) {
     throw new Error("当前页面没有提取到可翻译的正文段落。");
   }
 
-  const chunks = chunkBlocks(limited.blocks, 1400);
+  const chunks = chunkBlocks(limited.blocks, 900);
   const translationMap = new Map();
   let providerInfo = null;
 
