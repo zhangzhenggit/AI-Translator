@@ -3,51 +3,53 @@ import { resolveProviderSettings } from "../shared/defaults.js";
 const REQUEST_TIMEOUT_MS = 45000;
 
 export async function requestTranslation(settings, messages) {
-  const provider = resolveProviderSettings(settings);
+  return withKeepAlive((async () => {
+    const provider = resolveProviderSettings(settings);
 
-  if (!provider.apiKey.trim()) {
-    throw new Error(`请先配置 ${provider.label} 的 API Key。`);
-  }
+    if (!provider.apiKey.trim()) {
+      throw new Error(`请先配置 ${provider.label} 的 API Key。`);
+    }
 
-  if (!provider.baseUrl.trim()) {
-    throw new Error(`请先配置 ${provider.label} 的 Base URL。`);
-  }
+    if (!provider.baseUrl.trim()) {
+      throw new Error(`请先配置 ${provider.label} 的 Base URL。`);
+    }
 
-  if (!provider.model.trim()) {
-    throw new Error(`请先配置 ${provider.label} 的模型名。`);
-  }
+    if (!provider.model.trim()) {
+      throw new Error(`请先配置 ${provider.label} 的模型名。`);
+    }
 
-  const endpoint = `${provider.baseUrl.replace(/\/+$/, "")}/chat/completions`;
-  const response = await fetchWithTimeout(endpoint, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      Authorization: `Bearer ${provider.apiKey.trim()}`
-    },
-    body: JSON.stringify({
-      model: provider.model.trim(),
-      messages,
-      temperature: Number(settings.translation.temperature ?? 0.2),
-      stream: false
-    })
-  });
+    const endpoint = `${provider.baseUrl.replace(/\/+$/, "")}/chat/completions`;
+    const response = await fetchWithTimeout(endpoint, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+        Authorization: `Bearer ${provider.apiKey.trim()}`
+      },
+      body: JSON.stringify({
+        model: provider.model.trim(),
+        messages,
+        temperature: Number(settings.translation.temperature ?? 0.2),
+        stream: false
+      })
+    });
 
-  if (!response.ok) {
-    const message = await extractErrorMessage(response);
-    throw new Error(message);
-  }
+    if (!response.ok) {
+      const message = await extractErrorMessage(response);
+      throw new Error(message);
+    }
 
-  const payload = await response.json();
-  const content = extractMessageContent(payload);
+    const payload = await response.json();
+    const content = extractMessageContent(payload);
 
-  if (!content) {
-    throw new Error("服务商返回了空的翻译结果。");
-  }
+    if (!content) {
+      throw new Error("服务商返回了空的翻译结果。");
+    }
 
-  return {
-    provider,
-    text: content.trim()
-  };
+    return {
+      provider,
+      text: content.trim()
+    };
+  })());
 }
 
 async function fetchWithTimeout(url, options) {
@@ -94,4 +96,16 @@ function extractMessageContent(payload) {
   }
 
   return "";
+}
+
+async function withKeepAlive(promise) {
+  const keepAlive = setInterval(() => {
+    chrome.runtime.getPlatformInfo().catch(() => {});
+  }, 25_000);
+
+  try {
+    return await promise;
+  } finally {
+    clearInterval(keepAlive);
+  }
 }
