@@ -1,6 +1,5 @@
 import {
   PAGE_DISPLAY_OPTIONS,
-  PROVIDER_LABELS,
   SOURCE_LANGUAGES,
   TARGET_LANGUAGES,
   cloneSettings
@@ -8,10 +7,6 @@ import {
 import { getSettings, saveSettings } from "../background/storage.js";
 
 const elements = {
-  providerSwitch: document.getElementById("provider-switch"),
-  apiKey: document.getElementById("api-key"),
-  baseUrl: document.getElementById("base-url"),
-  model: document.getElementById("model"),
   sourceLanguage: document.getElementById("source-language"),
   targetLanguage: document.getElementById("target-language"),
   pageDisplayMode: document.getElementById("page-display-mode"),
@@ -31,7 +26,6 @@ async function initialize() {
   populateSelect(elements.pageDisplayMode, PAGE_DISPLAY_OPTIONS);
 
   settingsState = cloneSettings(await getSettings());
-  renderProviderSwitch();
   renderForm();
   bindEvents();
 }
@@ -44,44 +38,15 @@ function bindEvents() {
   });
 }
 
-function renderProviderSwitch() {
-  elements.providerSwitch.innerHTML = "";
-
-  for (const [providerKey, label] of Object.entries(PROVIDER_LABELS)) {
-    const button = document.createElement("button");
-    button.type = "button";
-    button.textContent = label;
-    button.classList.toggle("is-active", settingsState.activeProvider === providerKey);
-    button.addEventListener("click", () => {
-      collectForm();
-      settingsState.activeProvider = providerKey;
-      renderProviderSwitch();
-      renderForm();
-      setStatus(`已切换到 ${label}。`, "success");
-    });
-    elements.providerSwitch.appendChild(button);
-  }
-}
-
 function renderForm() {
-  const provider = settingsState.providers[settingsState.activeProvider];
   const translation = settingsState.translation;
 
-  elements.apiKey.value = provider.apiKey;
-  elements.baseUrl.value = provider.baseUrl;
-  elements.model.value = provider.model;
   elements.sourceLanguage.value = translation.sourceLanguage;
   elements.targetLanguage.value = translation.targetLanguage;
   elements.pageDisplayMode.value = translation.pageDisplayMode;
 }
 
 function collectForm() {
-  const provider = settingsState.providers[settingsState.activeProvider];
-
-  provider.apiKey = elements.apiKey.value.trim();
-  provider.baseUrl = elements.baseUrl.value.trim();
-  provider.model = elements.model.value.trim();
-
   settingsState.translation.sourceLanguage = elements.sourceLanguage.value;
   settingsState.translation.targetLanguage = elements.targetLanguage.value;
   settingsState.translation.pageDisplayMode = elements.pageDisplayMode.value;
