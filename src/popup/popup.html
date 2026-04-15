@@ -1,0 +1,74 @@
+<!doctype html>
+<html lang="zh-CN">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AI-Translator</title>
+    <link rel="stylesheet" href="./popup.css" />
+  </head>
+  <body>
+    <main class="shell">
+      <header class="header">
+        <div>
+          <h1>AI Translate</h1>
+          <p>网页 AI 翻译</p>
+        </div>
+        <button id="open-options" class="link-button" type="button">设置页</button>
+      </header>
+
+      <section class="section">
+        <h2>服务商</h2>
+        <div id="provider-switch" class="segmented"></div>
+
+        <label class="field">
+          <span>API Key</span>
+          <input id="api-key" type="password" placeholder="输入 API Key" autocomplete="off" />
+        </label>
+
+        <div class="field-row">
+          <label class="field">
+            <span>Base URL</span>
+            <input id="base-url" type="url" placeholder="https://api.deepseek.com" />
+          </label>
+
+          <label class="field">
+            <span>模型</span>
+            <input id="model" type="text" placeholder="deepseek-chat" />
+          </label>
+        </div>
+      </section>
+
+      <section class="section">
+        <h2>翻译参数</h2>
+
+        <div class="field-row">
+          <label class="field">
+            <span>源语言</span>
+            <select id="source-language"></select>
+          </label>
+
+          <label class="field">
+            <span>目标语言</span>
+            <select id="target-language"></select>
+          </label>
+        </div>
+
+        <div class="field-row">
+          <label class="field">
+            <span>全文显示</span>
+            <select id="page-display-mode"></select>
+          </label>
+        </div>
+      </section>
+
+      <div class="actions">
+        <button id="save-settings" class="button button--primary" type="button">保存</button>
+        <button id="test-connection" class="button" type="button">测试</button>
+      </div>
+
+      <footer id="status" class="status">准备就绪。</footer>
+    </main>
+
+    <script type="module" src="./popup.js"></script>
+  </body>
+</html>

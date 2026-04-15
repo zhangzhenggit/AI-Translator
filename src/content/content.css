@@ -1,0 +1,220 @@
+.alx-root,
+.alx-root *,
+.alx-inline-panel,
+.alx-inline-panel *,
+.alx-card,
+.alx-card * {
+  box-sizing: border-box;
+  font-family: "Segoe UI Variable Text", "PingFang SC", "Microsoft YaHei UI", sans-serif;
+}
+
+.alx-root {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 2147483646;
+}
+
+.alx-card {
+  pointer-events: auto;
+  border: 1px solid #dfe4ea;
+  border-radius: 10px;
+  background: #ffffff;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+  color: #1f2328;
+}
+
+.alx-card[hidden] {
+  display: none;
+}
+
+.alx-selection {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  width: min(360px, calc(100vw - 32px));
+  padding: 12px;
+  animation: alx-rise 180ms ease-out;
+}
+
+.alx-page-panel {
+  position: fixed;
+  left: 18px;
+  right: 18px;
+  bottom: 18px;
+  max-height: min(46vh, 420px);
+  display: grid;
+  grid-template-rows: auto 1fr;
+  overflow: hidden;
+  animation: alx-rise 220ms ease-out;
+}
+
+.alx-inline-panel {
+  position: relative;
+  z-index: 1;
+  isolation: isolate;
+  text-align: left;
+  line-height: normal;
+  letter-spacing: normal;
+  word-spacing: normal;
+  text-transform: none;
+  text-indent: 0;
+  writing-mode: horizontal-tb;
+  direction: ltr;
+  margin: 24px auto;
+  max-width: min(960px, calc(100vw - 32px));
+  border: 1px solid #dfe4ea;
+  border-radius: 10px;
+  background: #ffffff;
+  box-shadow: 0 8px 24px rgba(15, 23, 42, 0.08);
+  color: #1f2328;
+  overflow: hidden;
+}
+
+.alx-panel-head,
+.alx-selection-head,
+.alx-inline-head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 10px;
+  padding: 12px 14px 0;
+}
+
+.alx-panel-body,
+.alx-inline-body {
+  overflow: auto;
+  padding: 12px 14px 14px;
+  white-space: pre-wrap;
+  word-break: break-word;
+}
+
+.alx-selection-body {
+  padding: 10px 0 0;
+}
+
+.alx-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 8px;
+  border-radius: 999px;
+  background: #eef5ff;
+  color: #1f6feb;
+  font-size: 11px;
+  font-weight: 600;
+}
+
+.alx-title {
+  margin: 0;
+  font-size: 15px;
+  font-weight: 600;
+}
+
+.alx-meta {
+  margin: 4px 0 0;
+  color: #6b7280;
+  font-size: 12px;
+}
+
+.alx-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.alx-button {
+  border: 1px solid #dfe4ea;
+  border-radius: 8px;
+  padding: 7px 10px;
+  background: #ffffff;
+  color: #1f2328;
+  font-size: 12px;
+  font-weight: 500;
+  cursor: pointer;
+}
+
+.alx-button:hover {
+  background: #f8fafc;
+}
+
+.alx-button--brand {
+  border-color: #1f6feb;
+  background: #1f6feb;
+  color: #ffffff;
+}
+
+.alx-copy {
+  white-space: pre-wrap;
+  line-height: 1.7;
+  font-size: 14px;
+  text-align: left;
+  unicode-bidi: plaintext;
+}
+
+.alx-copy.is-loading,
+.alx-copy.is-error {
+  color: #6b7280;
+}
+
+.alx-copy.is-error {
+  color: #c03d2e;
+}
+
+.alx-skeleton {
+  display: grid;
+  gap: 10px;
+}
+
+.alx-skeleton span {
+  display: block;
+  height: 10px;
+  border-radius: 999px;
+  background: linear-gradient(90deg, #f1f5f9, #e2e8f0, #f1f5f9);
+  background-size: 200% 100%;
+  animation: alx-shimmer 1.2s linear infinite;
+}
+
+.alx-skeleton span:nth-child(2) {
+  width: 86%;
+}
+
+.alx-skeleton span:nth-child(3) {
+  width: 74%;
+}
+
+@keyframes alx-rise {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes alx-shimmer {
+  from {
+    background-position: 200% 0;
+  }
+
+  to {
+    background-position: -200% 0;
+  }
+}
+
+@media (max-width: 720px) {
+  .alx-page-panel {
+    left: 10px;
+    right: 10px;
+    bottom: 10px;
+    max-height: min(56vh, 460px);
+  }
+
+  .alx-inline-panel {
+    margin: 16px 10px;
+    max-width: none;
+  }
+}
