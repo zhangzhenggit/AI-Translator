@@ -3,6 +3,7 @@
   "name": "AI-Translator",
   "description": "AI translation for selected text and full web pages with DeepSeek and OpenAI support.",
   "version": "0.1.4",
+  "homepage_url": "https://zhengnest.com/projects/ai-translator",
   "permissions": [
     "activeTab",
     "contextMenus",

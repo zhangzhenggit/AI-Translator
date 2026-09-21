@@ -70,7 +70,7 @@ Recommended:
 
 ## Homepage URL
 
-- `https://github.com/zhangzhenggit/AI-Translator`
+- `https://zhengnest.com/projects/ai-translator`
 
 ## Permissions justification
 
