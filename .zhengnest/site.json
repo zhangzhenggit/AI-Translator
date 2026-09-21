@@ -1,0 +1,9 @@
+{
+  "tagline": "接入 DeepSeek / OpenAI 的划词翻译与全文双语对照，就在 Chrome 里。",
+  "icon": "edit",
+  "color": "#4f8bff",
+  "install": [
+    "打开 chrome://extensions，开启开发者模式",
+    "加载已解压的扩展程序，选择仓库目录"
+  ]
+}
